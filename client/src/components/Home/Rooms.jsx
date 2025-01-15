@@ -3,14 +3,14 @@ import Container from "../Shared/Container";
 import Heading from "../Shared/Heading";
 import LoadingSpinner from "../Shared/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 const Rooms = () => {
-  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
 
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ["rooms"],
     queryFn: async () => {
-      const { data } = await axiosSecure.get("/rooms");
+      const { data } = await axiosPublic.get("/rooms");
       return data;
     },
   });

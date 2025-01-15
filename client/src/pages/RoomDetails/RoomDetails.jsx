@@ -19,7 +19,6 @@ const RoomDetails = () => {
       return data;
     },
   });
-  console.log(room);
 
   if (isLoading) return <LoadingSpinner />;
   return (
