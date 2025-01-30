@@ -10,6 +10,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Statistics from "../pages/Dashboard/Common/Statistics";
 import AddRoom from "../pages/Dashboard/Host/AddRoom";
 import MyListings from "../pages/Dashboard/Host/MyListings";
+import Profile from "../pages/Dashboard/Common/Profile";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "my-listings",
         element: <MyListings />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },
