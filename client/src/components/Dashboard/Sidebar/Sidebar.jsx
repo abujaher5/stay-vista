@@ -12,6 +12,8 @@ import { MdHomeWork } from "react-icons/md";
 import useRole from "../../../hooks/useRole";
 import MenuItem from "./Menu/MenuItem";
 import HostMenu from "./Menu/HostMenu";
+import GuestMenu from "./Menu/GuestMenu";
+import AdminMenu from "./Menu/AdminMenu";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
@@ -77,9 +79,9 @@ const Sidebar = () => {
 
             {/*  Menu Items */}
             <nav>
-              {role === "guest" && <HostMenu />}
+              {role === "guest" && <GuestMenu />}
               {role === "host" && <HostMenu />}
-              {role === "host" && <HostMenu />}
+              {role === "admin" && <AdminMenu />}
             </nav>
           </div>
         </div>
