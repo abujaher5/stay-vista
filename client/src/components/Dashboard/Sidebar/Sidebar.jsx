@@ -23,8 +23,7 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
 
-  const [role, isLoading] = useRole();
-  // console.log(role, isLoading);
+  const [role] = useRole();
 
   // Sidebar Responsive Handler
   const handleToggle = () => {

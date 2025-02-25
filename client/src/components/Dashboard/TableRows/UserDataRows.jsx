@@ -31,12 +31,15 @@ const UserDataRow = ({ user, refetch }) => {
 
   // Modal handler
   const modalHandler = async (selected) => {
-    if (user?.status === "Verified" && loggedInUser.email !== user.email) {
-      setIsOpen(false);
-      return toast.error(
-        "User Status Need To Request For Changing  Their Role"
-      );
-    }
+    // for admin cannot change role without request of the user
+
+    // if (user?.status === "Verified" && loggedInUser.email !== user.email) {
+    //   setIsOpen(false);
+    //   return toast.error(
+    //     "User Status Need To Request For Changing  Their Role"
+    //   );
+    // }
+
     // admin or user if admin can't change their role
     if (loggedInUser.email === user.email) {
       toast.error("Action Not Allowed");
