@@ -51,6 +51,33 @@ async function run() {
     const roomsCollection = client.db("stayVistaDB").collection("rooms");
     const usersCollection = client.db("stayVistaDB").collection("users");
 
+    // verify admin middleware
+    const verifyAdmin = async (req, res, next) => {
+      const user = req.user;
+      const query = {
+        email: user?.email,
+      };
+      const result = await usersCollection.findOne(query);
+      if (!result || result?.role !== "admin")
+        return res.status(401).send({
+          message: "unauthorize access !!",
+        });
+      next();
+    };
+
+    // verify host middleware
+    const verifyHost = async (req, res, next) => {
+      const user = req.user;
+      const query = {
+        email: user?.email,
+      };
+      const result = await usersCollection.findOne(query);
+      if (!result || result?.role !== "host")
+        return res.status(401).send({
+          message: "unauthorized access !",
+        });
+    };
+
     // auth related api
     app.post("/jwt", async (req, res) => {
       const user = req.body;
@@ -116,6 +143,14 @@ async function run() {
       const result = await usersCollection.updateOne(query, updateDoc, options);
       res.send(result);
     });
+
+    // get a single user data by email from db
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.findOne({ email });
+      res.send(result);
+    });
+
     // Get all rooms data form database
     app.get("/rooms", async (req, res) => {
       const category = req.query.category;
@@ -127,8 +162,24 @@ async function run() {
     });
 
     // get all users data from database
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyToken, verifyAdmin, async (req, res) => {
       const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
+    // update a user role
+    app.patch("/users/update/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const query = { email };
+      const updateDoc = {
+        $set: {
+          ...user,
+          timestamp: Date.now(),
+        },
+      };
+
+      const result = await usersCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
@@ -141,13 +192,13 @@ async function run() {
     });
 
     // save a room data in database
-    app.post("/room", async (req, res) => {
+    app.post("/room", verifyToken, verifyHost, async (req, res) => {
       const roomData = req.body;
       const result = await roomsCollection.insertOne(roomData);
       res.send(result);
     });
     // delete room data
-    app.delete("/room/:id", async (req, res) => {
+    app.delete("/room/:id", verifyToken, verifyHost, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await roomsCollection.deleteOne(query);
@@ -155,12 +206,17 @@ async function run() {
     });
 
     // get all rooms for host
-    app.get("/my-listings/:email", async (req, res) => {
-      const email = req.params.email;
-      let query = { "host.email": email };
-      const result = await roomsCollection.find(query).toArray();
-      res.send(result);
-    });
+    app.get(
+      "/my-listings/:email",
+      verifyToken,
+      verifyHost,
+      async (req, res) => {
+        const email = req.params.email;
+        let query = { "host.email": email };
+        const result = await roomsCollection.find(query).toArray();
+        res.send(result);
+      }
+    );
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
