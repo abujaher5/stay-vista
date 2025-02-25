@@ -7,6 +7,7 @@ const Profile = () => {
   const { user, loading } = useAuth();
   const [role, isLoading] = useRole();
   //   console.log(role.split("")[0].toUpperCase() + role.slice(1, 4));
+
   if (loading || isLoading) return <LoadingSpinner />;
 
   return (

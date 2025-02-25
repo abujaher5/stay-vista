@@ -5,7 +5,7 @@ import { BsFillHouseAddFill } from "react-icons/bs";
 // import { GrUserAdmin } from "react-icons/gr";
 import { AiOutlineBars } from "react-icons/ai";
 import { BsGraphUp } from "react-icons/bs";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { MdHomeWork } from "react-icons/md";
@@ -14,17 +14,25 @@ import MenuItem from "./Menu/MenuItem";
 import HostMenu from "./Menu/HostMenu";
 import GuestMenu from "./Menu/GuestMenu";
 import AdminMenu from "./Menu/AdminMenu";
+import ToggleBtn from "../../Shared/Button/ToggleBtn";
 
 const Sidebar = () => {
   const { logOut } = useAuth();
   const [isActive, setActive] = useState(false);
+  const [toggle, setToggle] = useState(true);
+
+  const navigate = useNavigate();
 
   const [role, isLoading] = useRole();
-  console.log(role, isLoading);
+  // console.log(role, isLoading);
 
   // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive);
+  };
+
+  const toggleHandler = (e) => {
+    setToggle(e.target.checked);
   };
   return (
     <>
@@ -77,10 +85,20 @@ const Sidebar = () => {
           <div className="flex flex-col justify-between flex-1 mt-6">
             {/* Conditional toggle button here.. */}
 
+            {role === "host" && (
+              <ToggleBtn toggleHandler={toggleHandler} toggle={toggle} />
+            )}
+
             {/*  Menu Items */}
             <nav>
               {role === "guest" && <GuestMenu />}
-              {role === "host" && <HostMenu />}
+              {role === "host" ? (
+                toggle ? (
+                  <HostMenu />
+                ) : (
+                  <GuestMenu />
+                )
+              ) : undefined}
               {role === "admin" && <AdminMenu />}
             </nav>
           </div>
@@ -97,7 +115,12 @@ const Sidebar = () => {
           />
 
           <button
-            onClick={logOut}
+            // onClick={logOut}
+            // added navigation functionality
+            onClick={() => {
+              logOut();
+              navigate("/login");
+            }}
             className="flex w-full items-center px-4 py-2 mt-5 text-gray-600 hover:bg-gray-300   hover:text-gray-700 transition-colors duration-300 transform"
           >
             <GrLogout className="w-5 h-5" />
