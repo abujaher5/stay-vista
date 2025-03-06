@@ -5,6 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const port = process.env.PORT || 8000;
 
@@ -50,6 +51,7 @@ async function run() {
   try {
     const roomsCollection = client.db("stayVistaDB").collection("rooms");
     const usersCollection = client.db("stayVistaDB").collection("users");
+    const bookingsCollection = client.db("stayVistaDB").collection("bookings");
 
     // verify admin middleware
     const verifyAdmin = async (req, res, next) => {
@@ -107,6 +109,27 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    // create-payment-intent
+    app.post("/create-payment-intent", verifyToken, async (req, res) => {
+      const price = req.body.price;
+      console.log(req.body);
+      const priceInCent = parseFloat(price) * 100;
+      if (!price || priceInCent < 1) return;
+      // generate clientSecret
+
+      const { client_secret } = await stripe.paymentIntents.create({
+        amount: priceInCent,
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      //send client secret as response
+      res.send({
+        clientSecret: client_secret,
+      });
     });
 
     // save a user in database
@@ -217,6 +240,26 @@ async function run() {
         res.send(result);
       }
     );
+
+    // save a booking data in db
+    app.post("/booking", verifyToken, async (req, res) => {
+      const bookingData = req.body;
+      // save room booking info
+      const result = await bookingsCollection.insertOne(bookingData);
+
+      // change room availability
+      const roomId = bookingData?.roomId;
+      const query = {
+        _id: new ObjectId(roomId),
+      };
+
+      const updateDoc = {
+        $set: { booked: true },
+      };
+      const updatedRoom = await roomsCollection.updateOne(query, updateDoc);
+
+      res.send({ result, updatedRoom });
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
