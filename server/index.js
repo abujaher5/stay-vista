@@ -248,17 +248,34 @@ async function run() {
       const result = await bookingsCollection.insertOne(bookingData);
 
       // change room availability
-      const roomId = bookingData?.roomId;
+      // const roomId = bookingData?.roomId;
+      // const query = {
+      //   _id: new ObjectId(roomId),
+      // };
+
+      // const updateDoc = {
+      //   $set: { booked: true },
+      // };
+      // const updatedRoom = await roomsCollection.updateOne(query, updateDoc);
+
+      res.send(result);
+    });
+
+    // update room status
+    app.patch("/room/status/:id", async (req, res) => {
+      // change room availability
+      const id = req.params.id;
+      const status = req.body.status;
+
       const query = {
-        _id: new ObjectId(roomId),
+        _id: new ObjectId(id),
       };
 
       const updateDoc = {
-        $set: { booked: true },
+        $set: { booked: status },
       };
-      const updatedRoom = await roomsCollection.updateOne(query, updateDoc);
-
-      res.send({ result, updatedRoom });
+      const result = await roomsCollection.updateOne(query, updateDoc);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
