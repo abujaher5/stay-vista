@@ -61,7 +61,7 @@ const RoomReservation = ({ room, refetch }) => {
         <Button
           disabled={room?.booked === true}
           onClick={() => setIsOpen(true)}
-          label={"Reserve"}
+          label={room?.booked === true ? "Booked" : "Reserve"}
         />
       </div>
 
@@ -74,7 +74,11 @@ const RoomReservation = ({ room, refetch }) => {
           ...room,
 
           price: totalPrice,
-          guest: { name: user?.displayName },
+          guest: {
+            name: user?.displayName,
+            email: user?.email,
+            image: user?.photoURL,
+          },
         }}
       />
 
@@ -89,6 +93,7 @@ const RoomReservation = ({ room, refetch }) => {
 
 RoomReservation.propTypes = {
   room: PropTypes.object,
+  refetch: PropTypes.func,
 };
 
 export default RoomReservation;
