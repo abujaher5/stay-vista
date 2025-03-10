@@ -1,8 +1,16 @@
+import useRole from "../../../hooks/useRole";
+import AdminStatistics from "../Admin/AdminStatistics";
+import HostStatistics from "../Host/HostStatistics";
+
 const Statistics = () => {
+  const [role, isLoading] = useRole();
+
   return (
-    <div>
-      <h2 className="text-center text-5xl">Welcome to dashboard statistics</h2>
-    </div>
+    <>
+      {role === "admin" && <AdminStatistics />}
+      {role === "host" && <HostStatistics />}
+      {role === "guest" && <HostStatistics />}
+    </>
   );
 };
 
