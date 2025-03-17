@@ -60,6 +60,7 @@ async function run() {
         email: user?.email,
       };
       const result = await usersCollection.findOne(query);
+      console.log(result?.role);
       if (!result || result?.role !== "admin")
         return res.status(401).send({
           message: "unauthorize access !!",
@@ -78,6 +79,8 @@ async function run() {
         return res.status(401).send({
           message: "unauthorized access !",
         });
+
+      next();
     };
 
     // auth related api
@@ -284,7 +287,7 @@ async function run() {
     });
 
     // admin statistics
-    app.get("/admin-statistics", async (req, res) => {
+    app.get("/admin-statistics", verifyToken, verifyAdmin, async (req, res) => {
       const bookingDetails = await bookingsCollection
         .find({}, { projection: { date: 1, price: 1 } })
         .toArray();
@@ -312,6 +315,97 @@ async function run() {
         totalBookings,
         totalSales,
         chartData,
+      });
+    });
+    // host statistics
+    app.get("/host-statistics", verifyToken, verifyHost, async (req, res) => {
+      const { email } = req.user;
+      const bookingDetails = await bookingsCollection
+        .find(
+          {
+            "host.email": email,
+          },
+          { projection: { date: 1, price: 1 } }
+        )
+        .toArray();
+
+      const totalSales = bookingDetails.reduce(
+        (sum, booking) => sum + booking.price,
+        0
+      );
+      const totalBookings = bookingDetails.length;
+
+      const totalRooms = await roomsCollection.countDocuments({
+        "host.email": email,
+      });
+
+      const { timestamp } = await usersCollection.findOne(
+        { email },
+        {
+          projection: { timestamp: 1 },
+        }
+      );
+
+      const chartData = bookingDetails.map((booking) => {
+        const day = new Date(booking.date).getDate();
+        const month = new Date(booking.date).getMonth() + 1;
+        const data = [`${day}/${month}`, booking?.price];
+        return data;
+      });
+      chartData.unshift(["Day", "Sales"]);
+      console.log(chartData);
+      console.log(bookingDetails);
+
+      res.send({
+        totalRooms,
+        totalBookings,
+        totalSales,
+        chartData,
+        hostSince: timestamp,
+      });
+    });
+
+    // Guest Statistics
+    app.get("/guest-statistics", verifyToken, async (req, res) => {
+      const { email } = req.user;
+      const bookingDetails = await bookingsCollection
+        .find(
+          { "guest.email": email },
+          {
+            projection: {
+              date: 1,
+              price: 1,
+            },
+          }
+        )
+        .toArray();
+
+      const totalPrice = bookingDetails.reduce(
+        (sum, booking) => sum + booking.price,
+        0
+      );
+      const { timestamp } = await usersCollection.findOne(
+        { email },
+        { projection: { timestamp: 1 } }
+      );
+
+      const chartData = bookingDetails.map((booking) => {
+        const day = new Date(booking.date).getDate();
+        const month = new Date(booking.date).getMonth() + 1;
+        const data = [`${day}/${month}`, booking?.price];
+        return data;
+      });
+      chartData.unshift(["Day", "Sales"]);
+      // chartData.splice(0, 0, ['Day', 'Sales'])
+
+      console.log(chartData);
+
+      console.log(bookingDetails);
+      res.send({
+        totalBookings: bookingDetails.length,
+        totalPrice,
+        chartData,
+        guestSince: timestamp,
       });
     });
 
