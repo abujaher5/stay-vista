@@ -396,7 +396,6 @@ async function run() {
         return data;
       });
       chartData.unshift(["Day", "Sales"]);
-      // chartData.splice(0, 0, ['Day', 'Sales'])
 
       console.log(chartData);
 
