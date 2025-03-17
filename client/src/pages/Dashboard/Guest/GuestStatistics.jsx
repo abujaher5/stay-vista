@@ -2,6 +2,7 @@ import { Calendar } from "react-date-range";
 import { FaDollarSign } from "react-icons/fa";
 import { BsFillCartPlusFill } from "react-icons/bs";
 import { GiPlayerTime } from "react-icons/gi";
+import SalesLineChart from "../../../components/Dashboard/Charts/SalesLinechart";
 
 const GuestStatistics = () => {
   return (
@@ -65,6 +66,8 @@ const GuestStatistics = () => {
           {/* Total Sales Graph */}
           <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden xl:col-span-2">
             {/* Render Chart Here */}
+
+            <SalesLineChart />
           </div>
           {/* Calender */}
           <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden">

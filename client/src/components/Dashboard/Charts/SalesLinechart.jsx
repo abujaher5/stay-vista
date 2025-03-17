@@ -19,7 +19,7 @@ const SalesLineChart = ({ data }) => {
     <>
       {loading ? (
         <LoadingSpinner smallHeight />
-      ) : data.length > 1 ? (
+      ) : data?.length > 1 ? (
         <Chart
           chartType="LineChart"
           width="100%"
