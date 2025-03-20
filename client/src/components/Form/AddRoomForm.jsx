@@ -1,13 +1,13 @@
 import { TbFidgetSpinner } from "react-icons/tb";
 import { categories } from "../Categories/CategoriesData";
 import { DateRange } from "react-date-range";
+import PropTypes from "prop-types";
 
 const AddRoomForm = ({
   dates,
   handleDates,
   handleSubmit,
   imagePreview,
-  setImagePreview,
   imageText,
   handleImage,
   loading,
@@ -197,6 +197,15 @@ const AddRoomForm = ({
       </form>
     </div>
   );
+};
+AddRoomForm.propTypes = {
+  dates: PropTypes.object,
+  handleDates: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  imagePreview: PropTypes.string,
+  imageText: PropTypes.string,
+  handleImage: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 export default AddRoomForm;

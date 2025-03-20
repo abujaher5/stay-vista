@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import AddRoomForm from "../../../components/Form/AddRoomForm";
 import useAuth from "../../../hooks/useAuth";
 import { imageUpload } from "../../../api/utils";
@@ -12,6 +13,7 @@ const AddRoom = () => {
   const navigate = useNavigate();
   const { user, loading, setLoading } = useAuth();
   const [imagePreview, setImagePreview] = useState();
+
   const [imageText, setImageText] = useState("Upload Image");
   const [dates, setDates] = useState({
     startDate: new Date(),
@@ -112,6 +114,7 @@ const AddRoom = () => {
         imagePreview={imagePreview}
         handleImage={handleImage}
         imageText={imageText}
+        loading={loading}
       />
     </>
   );

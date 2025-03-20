@@ -12,7 +12,6 @@ const GuestMenu = () => {
   const [role] = useRole();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = () => {
     setIsModalOpen(false);
