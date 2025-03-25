@@ -18,8 +18,6 @@ const GuestMenu = () => {
   };
 
   const modalHandler = async () => {
-    console.log("I want to be a host");
-
     try {
       const currentUser = {
         email: user?.email,
@@ -30,7 +28,7 @@ const GuestMenu = () => {
         `${import.meta.env.VITE_API_URL}/user`,
         currentUser
       );
-      console.log(data);
+
       if (data.modifiedCount > 0) {
         toast.success("Success! Please wait for admin confirmation");
       } else {
@@ -42,7 +40,7 @@ const GuestMenu = () => {
       closeModal();
     }
   };
-  console.log(role);
+
   return (
     <>
       <MenuItem

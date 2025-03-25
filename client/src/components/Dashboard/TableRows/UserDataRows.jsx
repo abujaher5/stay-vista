@@ -18,7 +18,7 @@ const UserDataRow = ({ user, refetch }) => {
         `/users/update/${user?.email}`,
         role
       );
-      console.log(data);
+
       return data;
     },
     onSuccess: () => {
@@ -53,7 +53,6 @@ const UserDataRow = ({ user, refetch }) => {
     try {
       await mutateAsync(userRole);
     } catch (err) {
-      console.log(err);
       toast.error(err.message);
     }
   };
