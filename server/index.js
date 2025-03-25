@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
+const nodemailer = require("nodemailer");
 const cookieParser = require("cookie-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
@@ -34,6 +35,45 @@ const verifyToken = async (req, res, next) => {
     }
     req.user = decoded;
     next();
+  });
+};
+
+// send email
+const sendEmail = (emailAddress, emailData) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for port 465, false for other ports
+    auth: {
+      user: process.env.TRANSPORTER_EMAIL,
+      pass: process.env.TRANSPORTER_PASS,
+    },
+  });
+
+  // verify transporter
+  transporter.verify(function (error, success) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Server is ready to take our messages");
+    }
+  });
+
+  const mailBody = {
+    from: `"StayVista" <${process.env.TRANSPORTER_EMAIL}>`, // sender address
+    to: emailAddress, // list of receivers
+    subject: emailData.subject, // Subject line
+
+    html: emailData.message, // html body
+  };
+
+  transporter.sendMail(mailBody, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email Sent :" + info.response);
+    }
   });
 };
 
@@ -167,6 +207,14 @@ async function run() {
         upsert: true,
       };
       const result = await usersCollection.updateOne(query, updateDoc, options);
+
+      // send email to a new user login
+
+      sendEmail(user?.email, {
+        subject: "Welcome To StayVista",
+        message: `Browse rooms and book them`,
+      });
+
       res.send(result);
     });
 
@@ -249,6 +297,16 @@ async function run() {
       const bookingData = req.body;
       // save room booking info
       const result = await bookingsCollection.insertOne(bookingData);
+      // send email to guest
+      sendEmail(bookingData?.guest?.email, {
+        subject: "Booking Successful!",
+        message: `You have successfully booked a room through StayVista. Transaction Id: ${bookingData.transactionId}`,
+      });
+      // send email to host
+      sendEmail(bookingData?.host?.email, {
+        subject: "Your Room Got Booked Successful!",
+        message: `Get Ready To Welcome ${bookingData.guest.name}`,
+      });
 
       res.send(result);
     });
