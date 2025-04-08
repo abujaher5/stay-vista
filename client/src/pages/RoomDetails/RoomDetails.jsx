@@ -3,13 +3,12 @@ import { Helmet } from "react-helmet-async";
 import RoomReservation from "../../components/RoomDetails/RoomReservation";
 import Heading from "../../components/Shared/Heading";
 import { useQuery } from "@tanstack/react-query";
-
 import { useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const RoomDetails = () => {
-  const axiosSecure = useAxiosPublic();
+  const axiosPublic = useAxiosPublic();
   const { id } = useParams();
 
   const {
@@ -19,7 +18,7 @@ const RoomDetails = () => {
   } = useQuery({
     queryKey: ["room", id],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/room/${id}`);
+      const { data } = await axiosPublic.get(`/room/${id}`);
       return data;
     },
   });

@@ -18,7 +18,6 @@ const AdminStatistics = () => {
       return data;
     },
   });
-  console.log(statData);
   if (isLoading) return <LoadingSpinner />;
   return (
     <div>

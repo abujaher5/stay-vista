@@ -18,7 +18,6 @@ const GuestStatistics = () => {
       return data;
     },
   });
-  console.log(statData);
   if (isLoading) return <LoadingSpinner />;
   return (
     <div>

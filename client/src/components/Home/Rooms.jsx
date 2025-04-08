@@ -3,8 +3,9 @@ import Container from "../Shared/Container";
 import Heading from "../Shared/Heading";
 import LoadingSpinner from "../Shared/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
-import useAxiosPublic from "../../hooks/useAxiosPublic";
+
 import { useSearchParams } from "react-router-dom";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 const Rooms = () => {
   const axiosPublic = useAxiosPublic();
   // eslint-disable-next-line no-unused-vars
